@@ -1,12 +1,14 @@
 from flask import Flask
 from flask_cors import CORS
-from api.summary import summary_bp
+from api.inquiry_api import inquiry
+
 
 def create_app():
     app = Flask(__name__)
     CORS(app)
 
-    app.register_blueprint(summary_bp)
+    app.register_blueprint(inquiry)
+
 
     return app
 

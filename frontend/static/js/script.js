@@ -1,7 +1,8 @@
-import { loadSummary } from "./api.js";
+
 import { getDomElements } from "./config.js";
 import { renderCharts } from "./graph.js";
-import { showDataCards } from "./events.js";
+import { showInquiryCard } from "./events.js";
+import { getInquiryData } from "./api/inquiry.js";
 
 let DOM = {}; // สร้างตัวแปร global (ภายใน script.js) สำหรับเก็บ DOM elements
 
@@ -122,7 +123,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const analysisResults = document.getElementById('analysisResults');
             DOM.welcome.classList.add('hidden')
             DOM.contentAnalysis.classList.remove('hidden')
-            await loadSummary();
+            await getInquiryData();
         });
         }
     }
@@ -131,7 +132,7 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log("Welcome div element:", DOM.welcome);
     }
 
-    showDataCards();
+    showInquiryCard();
     renderCharts();
     contentAnalysis();
     updateFileList();

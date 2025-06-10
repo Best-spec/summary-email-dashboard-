@@ -1,25 +1,32 @@
-export function showDataCards() {
-    const colorDefault = 'bg-white'
-    const colorTexthead = 'text-gray-600'
-    const colortextmd = 'text-gray-800'
+import { getInquiryData } from "./api/inquiry.js";
 
-    const kpis = [
-    { title: 'Total Revenue', value: '$124,563', change: 12.5, color: colorDefault, colorTexthead: colorTexthead, colortextmd: colortextmd },
-    { title: 'Active Users', value: '8,429', change: -2.1, color: colorDefault, colorTexthead: colorTexthead, colortextmd: colortextmd  },
-    { title: 'Orders', value: '1,234', change: 8.3, color: colorDefault, colorTexthead: colorTexthead, colortextmd: colortextmd  },
-    { title: 'Conversion Rate', value: '3.24%', change: 15.2, color: colorDefault, colorTexthead: colorTexthead, colortextmd: colortextmd  }
-  ];
+// ฟังก์ชันนี้คือเอาไว้ render ตารางจากข้อมูล JSON ที่ได้จาก getInquiryData
+export async function showInquiryCard(containerId = 'kpi-container') {
+  const data = await getInquiryData(); // อันนี้เป็น object จาก API/JSON
+  const containerid = document.getElementById('kpi-container');
+  if (!containerid) return console.error(`❌ ไม่เจอ container: ${containerid}`);
 
-  const container = document.getElementById('kpi-container');
+  let html = '';
 
-  kpis.forEach(kpi => {
-    const card = document.createElement('div');
-    card.className = `bg-white rounded-xl shadow p-6 hover:shadow-lg transition ${kpi.color}`;
-    card.innerHTML = `
-      <h3 class="text-lg font-bold ${colorTexthead}  mb-2">${kpi.title}</h3>
-      <p class="text-3xl font-bold ${colortextmd} ">${kpi.value}</p>
-      <p class="mt-2 text-white">${kpi.change > 0 ? '+' : ''}${kpi.change}%</p>
-    `;
-    container.appendChild(card);
-  });
+for (const [lang, items] of Object.entries(data)) {
+  html += `<div class="mb-6">`;
+  html += `<h3 class="text-xl font-bold mb-4 text-gray-800">${lang}</h3>`;
+  html += `<div class="space-y-3">`;
+  
+  for (const [label, count] of Object.entries(items)) {
+    html += `
+      <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4 hover:shadow-md transition-shadow duration-200">
+        <div class="flex justify-between items-center">
+          <h4 class="text-gray-800 font-medium text-base">${label}</h4>
+          <span class="text-black text-lg px-3 py-1 rounded-full font-semibold">${count}</span>
+        </div>
+      </div>`;
+  }
+  
+  html += `</div></div>`;
+}
+
+  containerid.innerHTML = html;
+  console.log("ได้อยู้")
+  console.log(data)
 }
