@@ -286,16 +286,16 @@ document.getElementById('fileInput').addEventListener('change', async (e) => {
   if (!files.length) return;
 
   const allowedExtensions = ['.csv', '.xls', '.xlsx'];
+  const formData = new FormData();
 
-    for (const file of files) {
+  for (const file of files) {
     const ext = file.name.slice(file.name.lastIndexOf('.')).toLowerCase();
     if (!allowedExtensions.includes(ext)) {
         showErrorToast(`❌ ไฟล์ ${file.name} ไม่ใช่ไฟล์ที่รองรับ`);
         return;
     }
     formData.append('files', file);
-    }
-
+  }
 
   try {
     const res = await fetch('/upload-file/', {
@@ -311,7 +311,10 @@ document.getElementById('fileInput').addEventListener('change', async (e) => {
       showErrorToast(`❌ ${data.error}`);
     } else {
       console.log('✅ อัปโหลดเรียบร้อย:', data.files);
-      // ถ้ามี element แสดงรายการไฟล์ก็ค่อยอัปเดตตรงนี้
+      // อัพเดทรายการไฟล์ทันที
+      uploadedFiles = data.files; // อัพเดท uploadedFiles array
+      updateFileList(); // อัพเดทการแสดงผล
+      showMessage('อัปโหลดไฟล์สำเร็จ', 'success');
     }
   } catch (err) {
     showErrorToast('❌ อัปโหลดล้มเหลว: ' + err.message);
