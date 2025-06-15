@@ -79,12 +79,6 @@ def upload_file(request):
                             'success': False,
                             'error': f'ไฟล์ {file.name} ไม่ใช่ไฟล์ CSV หรือ Excel ที่รองรับ'
                         })
-                    # mime_type, _ = mimetypes.guess_type(file.name)
-                    # if mime_type != 'text/csv':
-                    #     return JsonResponse({
-                    #         'success': False,
-                    #         'error': f'ไฟล์ {file.name} ไม่ใช่ CSV แท้ (MIME: {mime_type})'
-                    #     })
                     uploaded_file = UploadedFile.objects.create(
                         name=file.name,
                         file=file
@@ -121,6 +115,7 @@ def upload_file(request):
 
 @require_POST
 def delete_file(request, file_id):
+    file_id = int(file_id)  # Ensure file_id is an integer
     try:
         file = UploadedFile.objects.get(id=file_id)
         file.file.delete()  # ลบจาก disk
@@ -128,6 +123,9 @@ def delete_file(request, file_id):
         return JsonResponse({'status': 'ok'})
     except UploadedFile.DoesNotExist:
         return JsonResponse({'error': 'File not found'}, status=404)
+
+def showtest(request):
+    return render(request, 'main/test.html')
 
 def showDF_file(request):
     try:

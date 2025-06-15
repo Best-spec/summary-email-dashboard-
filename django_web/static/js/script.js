@@ -1,3 +1,4 @@
+
 // File handling functionality
 let uploadedFiles = [];
 
@@ -40,10 +41,10 @@ function showErrorToast(message) {
 
 // Initialize handlers when document is ready
 document.addEventListener('DOMContentLoaded', function() {
-    initializeDropZone();
-    initializeFileInput();
+    // initializeDropZone();
+    // initializeFileInput();
     // initializeCharts();
-    initializeDeleteHandlers();
+    // initializeDeleteHandlers();
     
     // Initialize existing files from Django template
     const fileItems = document.getElementById('fileItems');
@@ -56,23 +57,23 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-function initializeDropZone() {
-    const dropZone = document.getElementById('dropZone');
+// function initializeDropZone() {
+//     const dropZone = document.getElementById('dropZone');
     
-    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-        dropZone.addEventListener(eventName, preventDefaults, false);
-    });
+//     ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+//         dropZone.addEventListener(eventName, preventDefaults, false);
+//     });
 
-    ['dragenter', 'dragover'].forEach(eventName => {
-        dropZone.addEventListener(eventName, highlight, false);
-    });
+//     ['dragenter', 'dragover'].forEach(eventName => {
+//         dropZone.addEventListener(eventName, highlight, false);
+//     });
 
-    ['dragleave', 'drop'].forEach(eventName => {
-        dropZone.addEventListener(eventName, unhighlight, false);
-    });
+//     ['dragleave', 'drop'].forEach(eventName => {
+//         dropZone.addEventListener(eventName, unhighlight, false);
+//     });
 
-    dropZone.addEventListener('drop', handleDrop, false);
-}
+//     dropZone.addEventListener('drop', handleDrop, false);
+// }
 
 function initializeFileInput() {
     const fileInput = document.getElementById('fileInput');
@@ -135,7 +136,7 @@ function handleFiles(files) {
             dropZone.innerHTML = originalDropZoneContent;
             
             // Show success message
-            showMessage('อัปโหลดไฟล์สำเร็จ', 'success');
+            showErrorToast('อัปโหลดไฟล์สำเร็จ', 'success');
         } else {
             throw new Error(data.error || 'เกิดข้อผิดพลาดในการอัปโหลด');
         }
@@ -147,7 +148,7 @@ function handleFiles(files) {
         dropZone.innerHTML = originalDropZoneContent;
         
         // Show error message
-        showMessage(error.message || 'เกิดข้อผิดพลาดในการอัปโหลด', 'error');
+        showErrorToast(error.message || 'เกิดข้อผิดพลาดในการอัปโหลด', 'error');
     });
 }
 
@@ -159,10 +160,10 @@ function updateFileList() {
     fileCount.textContent = uploadedFiles.length;
 
     if (uploadedFiles.length === 0) {
-        emptyState.style.display = 'block';
+        emptyState.classList.remove('hidden');
         fileItems.innerHTML = '';
     } else {
-        emptyState.style.display = 'none';
+        emptyState.classList.add('hidden');
         fileItems.innerHTML = uploadedFiles.map(file => `
             <div class="file-item mb-2 p-2 bg-gray-50 rounded flex items-center justify-between transition-all duration-300" data-file-id="${file.id}">
                 <span class="file-name">${file.name}</span>
@@ -190,26 +191,26 @@ function showDeleteModal(fileId) {
     modal.classList.remove('hidden');
 }
 
-function deleteFile(fileID) {
-  if (!confirm("แน่ใจว่าจะลบไฟล์ทั้งหมด?")) return;
+// function deleteFile(fileID) {
+//   if (!confirm("แน่ใจว่าจะลบไฟล์ทั้งหมด?")) return;
 
-  fetch(`/delete-file/${fileID}/`, {
-    method: 'POST',
-    headers: {
-      'X-CSRFToken': getCookie('csrftoken'),
-    }
-  })
-  .then(response => {
-    if (response.ok) {
-      // ลบตาราง CSV ออกจาก DOM ทันที
-      const fileElem = document.querySelector(`[data-file-id="${fileID}"]`);
-      if (fileElem) fileElem.remove();
-    } else {
-      alert("ลบไม่สำเร็จ");
-    }
-  });
-}
-window.deleteFile = deleteFile;
+//   fetch(`/delete-file/${fileID}/`, {
+//     method: 'POST',
+//     headers: {
+//       'X-CSRFToken': getCookie('csrftoken'),
+//     }
+//   })
+//   .then(response => {
+//     if (response.ok) {
+//       // ลบตาราง CSV ออกจาก DOM ทันที
+//       const fileElem = document.querySelector(`[data-file-id="${fileID}"]`);
+//       if (fileElem) fileElem.remove();
+//     } else {
+//       alert("ลบไม่สำเร็จ");
+//     }
+//   });
+// }
+// window.deleteFile = deleteFile;
 
 function initializeDeleteHandlers() {
     const modal = document.getElementById('deleteModal');
@@ -281,49 +282,53 @@ function initializeDeleteHandlers() {
     });
 }
 
-document.getElementById('fileInput').addEventListener('change', async (e) => {
-  const files = e.target.files;
-  if (!files.length) return;
+// document.getElementById('fileInput').addEventListener('change', async (e) => {
+//   const files = e.target.files;
+//   if (!files.length) return;
 
-  const allowedExtensions = ['.csv', '.xls', '.xlsx'];
-  const formData = new FormData();
+//   const allowedExtensions = ['.csv', '.xls', '.xlsx'];
+//   const formData = new FormData();
 
-  for (const file of files) {
-    const ext = file.name.slice(file.name.lastIndexOf('.')).toLowerCase();
-    if (!allowedExtensions.includes(ext)) {
-        showErrorToast(`❌ ไฟล์ ${file.name} ไม่ใช่ไฟล์ที่รองรับ`);
-        return;
-    }
-    formData.append('files', file);
-  }
+//   for (const file of files) {
+//     const ext = file.name.slice(file.name.lastIndexOf('.')).toLowerCase();
+//     if (!allowedExtensions.includes(ext)) {
+//         showErrorToast(`❌ ไฟล์ ${file.name} ไม่ใช่ไฟล์ที่รองรับ`);
+//         return;
+//     }
+//     formData.append('files', file);
+//   }
 
-  try {
-    const res = await fetch('/upload-file/', {
-      method: 'POST',
-      body: formData,
-      headers: {
-        'X-CSRFToken': getCookie('csrftoken'),
-      }
-    });
+//   try {
+//     const res = await fetch('/upload/', {
+//       method: 'POST',
+//       body: formData,
+//       headers: {
+//         'X-CSRFToken': getCookie('csrftoken'),
+//       }
+//     });
 
-    const data = await res.json();
-    if (!data.success) {
-      showErrorToast(`❌ ${data.error}`);
-    } else {
-      console.log('✅ อัปโหลดเรียบร้อย:', data.files);
-      // อัพเดทรายการไฟล์ทันที
-      uploadedFiles = data.files; // อัพเดท uploadedFiles array
-      updateFileList(); // อัพเดทการแสดงผล
-      showMessage('อัปโหลดไฟล์สำเร็จ', 'success');
-    }
-  } catch (err) {
-    showErrorToast('❌ อัปโหลดล้มเหลว: ' + err.message);
-  }
+//     const data = await res.json();
+//     if (!data.success) {
+//       showErrorToast(`❌ ${data.error}`);
+//     } else {
+//       console.log('✅ อัปโหลดเรียบร้อย:', data.files);
+//       // อัพเดทรายการไฟล์ทันที
+//       uploadedFiles = data.files; // อัพเดท uploadedFiles array
+//       updateFileList(); // อัพเดทการแสดงผล
+//       showErrorToast('อัปโหลดไฟล์สำเร็จ', 'success');
+//     }
+//   } catch (err) {
+//     showErrorToast('❌ อัปโหลดล้มเหลว: ' + err.message);
+//   }
 
-  e.target.value = ''; // reset input
-});
+//   e.target.value = ''; // reset input
+// });
 
 function analyzeAll() {
+    const showdata = document.getElementById('contentAnalysis');
+    const wealcomeData = document.getElementById('wealcomeData');
+    wealcomeData.classList.add('hidden');
+    showdata.classList.remove('hidden');
   fetch('/analyze-all/')
     .then(res => res.json())
     .then(data => {
